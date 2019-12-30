@@ -1,0 +1,129 @@
+
+Tabla
+Datos
+Índices
+Modelo
+Restricciones
+Permisos
+Estadísticas
+Valores por Defecto de Interfaz de Usuario
+Disparadores
+Dependencias
+SQL
+REST
+Consultas de ejemplo
+
+CREATE TABLE  "ARTICULOS" 
+   (	"ID_ARTICULOS" NUMBER(8,0) NOT NULL ENABLE, 
+	"DS_ARTICULO" VARCHAR2(200) NOT NULL ENABLE, 
+	"OP_TIPO_ARTICULO" VARCHAR2(1) NOT NULL ENABLE, 
+	"SKU_ARTICULO" VARCHAR2(100) NOT NULL ENABLE, 
+	 CONSTRAINT "ARTICULOS_PK" PRIMARY KEY ("ID_ARTICULOS")
+  USING INDEX  ENABLE, 
+	 CONSTRAINT "ARTICULOS_UK1" UNIQUE ("SKU_ARTICULO")
+  USING INDEX  ENABLE
+   )
+/
+
+CREATE OR REPLACE EDITIONABLE TRIGGER  "BI_ARTICULOS" 
+  before insert on "ARTICULOS"               
+  for each row  
+begin   
+  if :NEW."ID_ARTICULOS" is null then 
+    select "ARTICULOS_SEQ".nextval into :NEW."ID_ARTICULOS" from sys.dual; 
+  end if; 
+end; 
+
+/
+ALTER TRIGGER  "BI_ARTICULOS" ENABLE
+/
+-------------------------------------------------------------
+
+Tabla
+Datos
+Índices
+Modelo
+Restricciones
+Permisos
+Estadísticas
+Valores por Defecto de Interfaz de Usuario
+Disparadores
+Dependencias
+SQL
+REST
+Consultas de ejemplo
+
+CREATE TABLE  "CLIENTES" 
+   (	"ID_CLIENTE" NUMBER(8,0) NOT NULL ENABLE, 
+	"NR_IDENTIFICACION" NUMBER(20,0) NOT NULL ENABLE, 
+	"DS_CLIENTE" VARCHAR2(200) NOT NULL ENABLE, 
+	 CONSTRAINT "CLIENTES_PK" PRIMARY KEY ("ID_CLIENTE")
+  USING INDEX  ENABLE
+   )
+/
+
+CREATE OR REPLACE EDITIONABLE TRIGGER  "BI_CLIENTES" 
+  before insert on "CLIENTES"               
+  for each row  
+begin   
+  if :NEW."ID_CLIENTE" is null then 
+    select "CLIENTES_SEQ".nextval into :NEW."ID_CLIENTE" from sys.dual; 
+  end if; 
+end; 
+
+/
+ALTER TRIGGER  "BI_CLIENTES" ENABLE
+/
+--------------------------------------------------------
+CREATE TABLE  "ORDENES" 
+   (	"ID_ORDEN" NUMBER(8,0) NOT NULL ENABLE, 
+	"DS_ORDEN" VARCHAR2(200) NOT NULL ENABLE, 
+	"OP_TIPO_ORDEN" VARCHAR2(1) NOT NULL ENABLE, 
+	"ID_CLIENTE" NUMBER(8,0) NOT NULL ENABLE, 
+	"ID_TECNICO" VARCHAR2(200) NOT NULL ENABLE, 
+	"FECHA" DATE, 
+	 CONSTRAINT "ORDENES_PK" PRIMARY KEY ("ID_ORDEN")
+  USING INDEX  ENABLE
+   )
+/
+ALTER TABLE  "ORDENES" ADD CONSTRAINT "ORDENES_FK" FOREIGN KEY ("ID_CLIENTE")
+	  REFERENCES  "CLIENTES" ("ID_CLIENTE") ENABLE
+/
+
+CREATE OR REPLACE EDITIONABLE TRIGGER  "BI_ORDENES" 
+  before insert on "ORDENES"               
+  for each row  
+begin   
+  if :NEW."ID_ORDEN" is null then 
+    select "ORDENES_SEQ".nextval into :NEW."ID_ORDEN" from sys.dual; 
+  end if; 
+end; 
+
+/
+ALTER TRIGGER  "BI_ORDENES" ENABLE
+/
+-------------------------------------------
+CREATE TABLE  "ORDENES_DETALLE" 
+   (	"ID_DETALLE" NUMBER(8,0) NOT NULL ENABLE, 
+	"ID_ORDEN" NUMBER(8,0) NOT NULL ENABLE, 
+	"ID_ARTICULO" NUMBER(8,0) NOT NULL ENABLE, 
+	 CONSTRAINT "ORDENES_DETALLE_PK" PRIMARY KEY ("ID_DETALLE")
+  USING INDEX  ENABLE
+   )
+/
+ALTER TABLE  "ORDENES_DETALLE" ADD CONSTRAINT "ORDENES_DETALLE_FK2" FOREIGN KEY ("ID_ORDEN")
+	  REFERENCES  "ORDENES" ("ID_ORDEN") ENABLE
+/
+
+CREATE OR REPLACE EDITIONABLE TRIGGER  "BI_ORDENES_DETALLE" 
+  before insert on "ORDENES_DETALLE"               
+  for each row  
+begin   
+  if :NEW."ID_DETALLE" is null then 
+    select "ORDENES_DETALLE_SEQ".nextval into :NEW."ID_DETALLE" from sys.dual; 
+  end if; 
+end; 
+
+/
+ALTER TRIGGER  "BI_ORDENES_DETALLE" ENABLE
+/
